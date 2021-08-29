@@ -38,8 +38,6 @@ function DirVector(x,y) {
   }
 }
 
-
-
 function Drawing_Library(canvas){
   this.canvas = canvas;
   const dl = this;
@@ -58,7 +56,6 @@ function Drawing_Library(canvas){
       dl.fillFromPoints(this.points, color)
       return this
     }
-
     this.addMidPoints = function() {
       let polygon = this.points;
       let resPolygon = [];
@@ -79,7 +76,6 @@ function Drawing_Library(canvas){
       resPolygonObj.midPoint = this.midPoint;
       return resPolygonObj;
     }
-
     this.scale = function(f, flowArr=[10,10,10,10]){
       let resPolygonObj = new dl.Polygon()
       resPolygonObj.midPoint = this.midPoint;
@@ -89,17 +85,14 @@ function Drawing_Library(canvas){
         let normalDirUnitVectorToMid = dirVectorToMid.getUnitVector();
         let radius = dirVectorToMid.getLength()
         let protrusion = radius * f
-
         // add Flow Array
         let iFlowArr = parseInt(remap(i,0,this.points.length,0,flowArr.length));
         let flowFac = flowArr[iFlowArr]
         let nProtrusion = remap(flowFac,0,10,radius,protrusion);
-
         return this.midPoint.addPoint(normalDirUnitVectorToMid.multiplyVectorByNumber(nProtrusion))
       })
       return resPolygonObj;
     }
-
     this.protrudeMidPoints = function(protrusionFn) {
       let resPolygonObj = new dl.Polygon();
       resPolygonObj.midPoint = this.midPoint;
@@ -119,12 +112,9 @@ function Drawing_Library(canvas){
           } else {
             return point
           }
-       
         })
       return resPolygonObj
-      
     }
-
   }
   this.fillFromPoints = function(pointsArray, color) {
     if(pointsArray && pointsArray.length > 0) {
@@ -195,8 +185,7 @@ function Utils(){
   }
 }
 
-
-/*P5PerlinNoisehttps://github.com/processing/p5.js/blob/1.3.1/src/math/noise.js#L36*/
+/* P5PerlinNoise https://github.com/processing/p5.js/blob/1.3.1/src/math/noise.js#L36 */
 let p_octaves = 4,p_amp_falloff = 0.5, perlin;
 const P_YWRAPB = 4,P_YWRAP = 1 << P_YWRAPB,P_ZWRAPB = 8,P_ZWRAP = 1 << P_ZWRAPB,P_SIZE = 4095, s_c = i => 0.5 * (1.0 - Math.cos(i * Math.PI));
 function n(P,_=0,l=0){if(null==perlin){perlin=new Array(P_SIZE+1);for(let P=0;P<P_SIZE+1;P++)perlin[P]=Math.random()}P<0&&(P=-P),_<0&&(_=-_),l<0&&(l=-l);let r,e,n,p,i,o=Math.floor(P),Z=Math.floor(_),t=Math.floor(l),f=P-o,E=_-Z,I=l-t,S=0,a=.5;for(let P=0;P<p_octaves;P++){let P=o+(Z<<P_YWRAPB)+(t<<P_ZWRAPB);r=s_c(f),e=s_c(E),n=perlin[P&P_SIZE],n+=r*(perlin[P+1&P_SIZE]-n),p=perlin[P+P_YWRAP&P_SIZE],n+=e*((p+=r*(perlin[P+P_YWRAP+1&P_SIZE]-p))-n),P+=P_ZWRAP,p=perlin[P&P_SIZE],p+=r*(perlin[P+1&P_SIZE]-p),i=perlin[P+P_YWRAP&P_SIZE],p+=e*((i+=r*(perlin[P+P_YWRAP+1&P_SIZE]-i))-p),S+=(n+=s_c(I)*(p-n))*a,a*=p_amp_falloff,o<<=1,Z<<=1,t<<=1,(f*=2)>=1&&(o++,f--),(E*=2)>=1&&(Z++,E--),(I*=2)>=1&&(t++,I--)}return S}
