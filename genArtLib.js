@@ -181,18 +181,19 @@ function Random(seed){
       this.y2 = x2 * w;
       this._gaussian_previous = true;
     }
-
     const m = mean || 0;
     return y1 * sd + m;
   };
   this.randomPareto = function(alpha=1, beta=5) {
-    // beta scale => The higher the more spread out
-    // alpha shape =>
     return beta / pow( R.random(), 1.0/alpha );
   }
 }
 
-
+function Utils(){
+    this.remap = function(n, s1, st1, s2, st2) {
+      return ((n - s1) / (st1 - s1)) * (st2 - s2) + s2;
+  }
+}
 
 
 /*P5PerlinNoisehttps://github.com/processing/p5.js/blob/1.3.1/src/math/noise.js#L36*/
@@ -200,8 +201,3 @@ let p_octaves = 4,p_amp_falloff = 0.5, perlin;
 const P_YWRAPB = 4,P_YWRAP = 1 << P_YWRAPB,P_ZWRAPB = 8,P_ZWRAP = 1 << P_ZWRAPB,P_SIZE = 4095, s_c = i => 0.5 * (1.0 - Math.cos(i * Math.PI));
 function n(P,_=0,l=0){if(null==perlin){perlin=new Array(P_SIZE+1);for(let P=0;P<P_SIZE+1;P++)perlin[P]=Math.random()}P<0&&(P=-P),_<0&&(_=-_),l<0&&(l=-l);let r,e,n,p,i,o=Math.floor(P),Z=Math.floor(_),t=Math.floor(l),f=P-o,E=_-Z,I=l-t,S=0,a=.5;for(let P=0;P<p_octaves;P++){let P=o+(Z<<P_YWRAPB)+(t<<P_ZWRAPB);r=s_c(f),e=s_c(E),n=perlin[P&P_SIZE],n+=r*(perlin[P+1&P_SIZE]-n),p=perlin[P+P_YWRAP&P_SIZE],n+=e*((p+=r*(perlin[P+P_YWRAP+1&P_SIZE]-p))-n),P+=P_ZWRAP,p=perlin[P&P_SIZE],p+=r*(perlin[P+1&P_SIZE]-p),i=perlin[P+P_YWRAP&P_SIZE],p+=e*((i+=r*(perlin[P+P_YWRAP+1&P_SIZE]-i))-p),S+=(n+=s_c(I)*(p-n))*a,a*=p_amp_falloff,o<<=1,Z<<=1,t<<=1,(f*=2)>=1&&(o++,f--),(E*=2)>=1&&(Z++,E--),(I*=2)>=1&&(t++,I--)}return S}
 function nS(e){const n=(()=>{const e=4294967296;let n,r;return{sS(t){r=n=(null==t?Math.random()*e:t)>>>0},gS:()=>n,rand:()=>(r=(1664525*r+1013904223)%e)/e}})();n.sS(e),perlin=new Array(P_SIZE+1);for(let e=0;e<P_SIZE+1;e++)perlin[e]=n.rand()}
-
-function remap(n, s1, st1, s2, st2) {
-     return ((n - s1) / (st1 - s1)) * (st2 - s2) + s2;
-}
-
