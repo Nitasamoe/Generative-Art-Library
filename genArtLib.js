@@ -134,7 +134,6 @@ function Drawing_Library(canvas){
       canvas.strokeStyle = color;
       canvas.beginPath();
       pointsArray.forEach(point => {   
-        ctx.moveTo(point.x, point.y); 
         canvas.lineTo(point.x, point.y);
       })
       canvas.stroke();
