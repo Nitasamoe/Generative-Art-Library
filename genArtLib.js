@@ -129,7 +129,7 @@ function Drawing_Library(canvas){
       alert("length 0")
     }
   }
-  this.outlineFromPoints = function(pointsArray, color, close=true) {
+  this.outlineFromPoints = function(pointsArray, color) {
     if(pointsArray && pointsArray.length > 0) {
       canvas.strokeStyle = color;
       canvas.beginPath();
@@ -137,9 +137,6 @@ function Drawing_Library(canvas){
         ctx.moveTo(point.x, point.y); 
         canvas.lineTo(point.x, point.y);
       })
-      if(close===true) {
-        canvas.closePath();
-      }
       canvas.stroke();
     } else {
       alert("length 0")
