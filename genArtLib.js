@@ -136,9 +136,9 @@ function Drawing_Library(canvas){
       pointsArray.forEach(point => {    
         canvas.lineTo(point.x, point.y);
       })
-      if(close===true) {
-        canvas.closePath();
-      }
+      // if(close===true) {
+      //   canvas.closePath();
+      // }
       canvas.stroke();
     } else {
       alert("length 0")
