@@ -187,6 +187,25 @@ function Utils(){
     this.remap = function(n, s1, st1, s2, st2) {
       return ((n - s1) / (st1 - s1)) * (st2 - s2) + s2;
   }
+  this.lerpRGB = function(col1, col2, step) {
+    let rgb1 = col1.split('(')[1].split(')')[0].split(',');
+    let r1 = Number(rgb1[0]);
+    let g1 = Number(rgb1[1]);
+    let b1 = Number(rgb1[2]);
+    let rgb2 = col2.split('(')[1].split(')')[0].split(',');
+    let r2 = Number(rgb2[0]);
+    let g2 = Number(rgb2[1]);
+    let b2 = Number(rgb2[2]);
+
+    let distR = (r2-r1)*step;
+    let distG = (g2-g1)*step;
+    let distB = (b2-b1)*step;
+    let resRGB = `rgb(${r1+distR},${g1+distG},${b1+distB})`
+    return resRGB
+  }
+  this.lerpNum = function(num1, num2, step) {
+    return num1 + (num2-num1)*step;
+  }
 }
 
 function FlowField(config) {
@@ -200,10 +219,13 @@ function FlowField(config) {
   
   // STREAMLINES
   this.STREAMLINES = [];
-  this.SEGMENT_LENGTH = 10;
+  this.SEGMENT_LENGTH = config.segment_length;
+  this.SEGMENT_LENGTH_FLUTTER = config.segment_length_flutter;
   this.PERLIN_FACTOR = config.perlin_factor;
+  this.PERLIN_FACTOR_OFFSET = config.perlin_factor_offset;
   this.GRID_DISTANCE = config.grid_distance;
   this.STARTING_POINTS_TYPE = config.starting_points_type;
+  this.STARTING_POINTS = config.starting_points;
 
 
   this.init = function() {
@@ -247,9 +269,12 @@ function FlowField(config) {
         let x = i*this.GRID_DISTANCE;        
         let yTop = 0;
         let yBottom = this.FRAME_HEIGHT;
-        startPoints.push(new Point(x,yTop))
+        //startPoints.push(new Point(x,yTop))
         startPoints.push(new Point(x,yBottom))
       }
+    }
+    else if(this.STARTING_POINTS_TYPE === "CUSTOM") {
+      startPoints = this.STARTING_POINTS;
     }
     return startPoints.map(point => this.generateStreamline(point))
   }
@@ -266,7 +291,8 @@ function FlowField(config) {
     let leftStateRunning = true;
     let rightStateRunning = true;
     counter = 0;
-    while((leftStateRunning === true || rightStateRunning === true) && counter < 5000) {
+    let maxLength = R.random()>0.5?this.SEGMENT_LENGTH:this.SEGMENT_LENGTH+this.SEGMENT_LENGTH_FLUTTER
+    while((leftStateRunning === true || rightStateRunning === true) && counter < maxLength) {
       let switchActive = (leftStateRunning === true && rightStateRunning === true);
       // Condition to stop when the current direction doesnt have to run anymore
       let stopRunOnThisSide = false;
@@ -318,8 +344,9 @@ function FlowField(config) {
     let px = point.x;
     let py = point.y;
     
-    let perlin_noise_Angle = n(px*this.PERLIN_FACTOR, py*this.PERLIN_FACTOR)
+    let perlin_noise_Angle = n((px+this.PERLIN_FACTOR_OFFSET)*this.PERLIN_FACTOR, (py+this.PERLIN_FACTOR_OFFSET)*this.PERLIN_FACTOR)
     let forceAngle = U.remap(perlin_noise_Angle, 0, 1, 0, 2*Math.PI);
+    forceAngle = U.lerpNum(forceAngle, 1.9*Math.PI, 0.0)
     if(flowAlong === "right") {
       forceAngle = (forceAngle-Math.PI) % (2*Math.PI)
     }
@@ -348,6 +375,7 @@ function ESS(config){
   this.SEGMENT_LENGTH = this.D_SEP;
   this.START_POINT = config.startPoint;
   this.PERLIN_FACTOR = config.perlin_factor;
+  this.PERLIN_FACTOR_OFFSET = config.perlin_factor_offset;
   this.MAX_RANDOM_SEED_POINTS = 10;
   this.MIN_NUM_SEGMENTS = 100 / this.SEGMENT_LENGTH;
   this.SIDE_FOR_SEED_POINT = "right";
@@ -631,8 +659,6 @@ function ESS(config){
     });
   }
 }
-
-
 
 /* P5PerlinNoise https://github.com/processing/p5.js/blob/1.3.1/src/math/noise.js#L36 */
 let p_octaves = 4,p_amp_falloff = 0.5, perlin;
